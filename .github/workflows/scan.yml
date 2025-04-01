@@ -5,10 +5,7 @@ on:
   push:
     branches:
       - main  # You can specify which branch you want to trigger the action on (e.g., 'main')
-  pull_request:
-    branches:
-      - main  # You can specify which branch to listen for pull requests (e.g., 'main')
-
+  
 jobs:
   scan:
     runs-on: ubuntu-latest  # Use the latest Ubuntu runner
@@ -24,6 +21,15 @@ jobs:
         with:
           python-version: '3.x'  # Use the appropriate Python version
 
+      # Setup OWASP ZAP
+      - name: Setup OWASP ZAP
+        uses: zaproxy/action-full-scan@v0.9.0
+        with:
+          docker_name: 'owasp/zap2docker-stable'
+          target: ${{ secrets.TARGET_URL }}
+          cmd_options: '-a'
+          allow_issue_writing: false
+
       # Install dependencies
       - name: Install dependencies
         run: |
@@ -31,5 +37,7 @@ jobs:
 
       # Run the vulnerability scan (make sure scan.py and config.yml are in the repo)
       - name: Run vulnerability scan
+        env:
+          TARGET_URL: ${{ secrets.TARGET_URL }}
         run: |
           python3 scan.py
