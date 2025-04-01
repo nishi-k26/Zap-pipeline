@@ -2,7 +2,9 @@ import yaml
 from zapv2 import ZAPv2
 import time
 import requests
+import os
 
+api_key = os.getenv('API_KEY')
 # Load the YAML configuration
 with open("config.yml", "r") as config_file:
     config = yaml.safe_load(config_file)
@@ -17,7 +19,7 @@ scan_type = scan_settings["scan_type"]
 max_depth = scan_settings["max_depth"]
 
 # Start ZAP session
-zap = ZAPv2(apikey="maq1jnv9jbc8af0alk674kvk3o")
+zap = ZAPv2(apikey=api_key)
 
 # Open the target URL
 print(f"Opening URL: {website_url}")
