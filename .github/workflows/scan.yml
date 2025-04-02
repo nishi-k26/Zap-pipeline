@@ -27,13 +27,15 @@ jobs:
           python-version: '3.x'  # Use the appropriate Python version
 
       # Install ZAP
-      - name: Install ZAP
-        run: |
-          wget https://github.com/zaproxy/zaproxy/releases/download/v2.14.0/ZAP_2.14.0_Linux.tar.gz
-          tar -xf ZAP_2.14.0_Linux.tar.gz
-          cd ZAP_2.14.0
-          ./zap.sh -daemon &
-          sleep 10
+      - name: Setup OWASP ZAP
+        uses: zaproxy/action-full-scan@v0.9.0
+        with:
+          docker_name: 'ghcr.io/zaproxy/zaproxy:2.16.0'
+          target: ${{ secrets.TARGET_URL }}
+          cmd_options: '-a'
+          allow_issue_writing: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          format: 'json'
 
       # Install dependencies
       - name: Install dependencies
