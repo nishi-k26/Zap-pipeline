@@ -1,23 +1,28 @@
-import yaml
-from zapv2 import ZAPv2
 import time
+import os
 import requests
+from zapv2 import ZAPv2
+from dotenv import load_dotenv
 
-# Load the YAML configuration
-with open("config.yml", "r") as config_file:
-    config = yaml.safe_load(config_file)
+load_dotenv()
 
-# Extract data from YAML
-website_url = config["website_url"]
-username = config["username"]
-password = config["password"]
-scan_settings = config["scan_settings"]
-attack_mode = scan_settings["attack_mode"]
-scan_type = scan_settings["scan_type"]
-max_depth = scan_settings["max_depth"]
+# Retrieve sensitive information from environment variables
+website_url = os.getenv('TARGET_URL')  # Use the environment variable for the URL
+username = os.getenv('USERNAME')  # Use the environment variable for the username
+password = os.getenv('PASSWORD')  # Use the environment variable for the password
+api_key = os.getenv('API_KEY')  # Use the environment variable for the API key
 
-# Start ZAP session
-zap = ZAPv2(apikey="maq1jnv9jbc8af0alk674kvk3o")
+# Retrieve scan settings from environment variables
+attack_mode = os.getenv('ATTACK_MODE', 'false').lower() == 'true'  # Default to False if not set
+scan_type = os.getenv('SCAN_TYPE', 'quick')  # Default to 'quick' if not set
+max_depth = int(os.getenv('MAX_DEPTH', 5))  # Default to 5 if not set
+
+# Check if the environment variables are set
+if not website_url or not username or not password or not api_key:
+    raise ValueError("Required environment variables (TARGET_URL, USERNAME, PASSWORD, API_KEY) are not set.")
+
+# Start ZAP session with the API key
+zap = ZAPv2(apikey=api_key)
 
 # Open the target URL
 print(f"Opening URL: {website_url}")
@@ -49,7 +54,7 @@ else:
 print(f"Spidering the website...")
 zap.spider.scan(website_url)
 
-# Wait for spidering to finish (this is just an example, you may need to adjust this logic)
+# Wait for spidering to finish
 while int(zap.spider.status()) < 100:
     print(f"Spidering: {zap.spider.status()}% complete")
     time.sleep(2)

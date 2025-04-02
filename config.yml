@@ -1,7 +1,0 @@
-website_url: "http://altoro.testfire.net/login.jsp"
-username: "admin"
-password: "admin"
-scan_settings:
-  attack_mode: true
-  scan_type: full
-  max_depth: 5
