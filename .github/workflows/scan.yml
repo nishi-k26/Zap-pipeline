@@ -10,6 +10,11 @@ jobs:
   scan:
     runs-on: ubuntu-latest  # Use the latest Ubuntu runner
 
+    permissions:
+      contents: read
+      security-events: write
+      actions: write
+
     steps:
       # Checkout the code
       - name: Checkout code
@@ -30,6 +35,7 @@ jobs:
           cmd_options: '-a'
           allow_issue_writing: false
           token: ${{ secrets.GITHUB_TOKEN }}  # Added GitHub token for authentication
+          format: 'json'
 
       # Install dependencies
       - name: Install dependencies
@@ -40,5 +46,16 @@ jobs:
       - name: Run vulnerability scan
         env:
           TARGET_URL: ${{ secrets.TARGET_URL }}
+          API_KEY: ${{ secrets.API_KEY }}
         run: |
           python3 scan.py
+
+      - name: Upload scan results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-scan-results
+          path: |
+            report.txt
+            zap-scan.json
+          retention-days: 30
