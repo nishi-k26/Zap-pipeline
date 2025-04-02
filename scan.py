@@ -2,10 +2,7 @@ import yaml
 from zapv2 import ZAPv2
 import time
 import requests
-import os
-from datetime import datetime
 
-api_key = os.getenv('API_KEY')
 # Load the YAML configuration
 with open("config.yml", "r") as config_file:
     config = yaml.safe_load(config_file)
@@ -20,7 +17,7 @@ scan_type = scan_settings["scan_type"]
 max_depth = scan_settings["max_depth"]
 
 # Start ZAP session
-zap = ZAPv2(apikey=api_key)
+zap = ZAPv2(apikey="maq1jnv9jbc8af0alk674kvk3o")
 
 # Open the target URL
 print(f"Opening URL: {website_url}")
@@ -94,36 +91,3 @@ with open("report.txt", "w") as report_file:
             report_file.write("-" * 80 + "\n\n")
 
 print("Report saved to report.txt")
-
-# Save vulnerabilities to a YAML file
-print("Saving vulnerabilities to scan_results.yml...")
-scan_results = {
-    "scan_metadata": {
-        "target_url": website_url,
-        "timestamp": datetime.now().isoformat(),
-        "scan_type": scan_policy,
-        "total_alerts": len(alerts)
-    },
-    "vulnerabilities": []
-}
-
-if alerts:
-    for alert in alerts:
-        vulnerability = {
-            "risk_level": alert.get('risk'),
-            "name": alert.get('name'),
-            "description": alert.get('description'),
-            "solution": alert.get('solution'),
-            "url": alert.get('url'),
-            "parameter": alert.get('param'),
-            "evidence": alert.get('evidence'),
-            "confidence": alert.get('confidence')
-        }
-        scan_results["vulnerabilities"].append(vulnerability)
-
-# Write to YAML file
-with open("scan_results.yml", "w") as yaml_file:
-    yaml.safe_dump(scan_results, yaml_file, default_flow_style=False, sort_keys=False, allow_unicode=True)
-
-print("Results saved to scan_results.yml")
-

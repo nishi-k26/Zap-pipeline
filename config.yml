@@ -1,8 +1,7 @@
-website_url: ${{ secrets.TARGET_URL }}
-username: ${{ secrets.USERNAME }}
-password: ${{ secrets.PASSWORD }}
+website_url: "http://altoro.testfire.net/login.jsp"
+username: "admin"
+password: "admin"
 scan_settings:
   attack_mode: true
   scan_type: full
   max_depth: 5
-
