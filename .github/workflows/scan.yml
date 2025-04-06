@@ -34,7 +34,7 @@ jobs:
       - name: Install and Start ZAP using Docker
         run: |
           docker pull zaproxy/zap-stable
-          docker run -d -p 8080:8080 -e ZAP_API_KEY=${{ secrets.API_KEY }} owasp/zap2docker zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true
+          docker run -d -p 8080:8080 -e ZAP_API_KEY=${{ secrets.API_KEY }} zaproxy/zap-stable zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true
           sleep 30
 
       # Install dependencies
