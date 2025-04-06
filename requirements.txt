@@ -84,7 +84,6 @@
     mccabe==0.7.0
     mdurl==0.1.2
     mistune==3.0.2
-    ml-dtypes==0.4.0
     mypy-extensions==1.0.0
     namex==0.0.8
     nbclient==0.10.0
@@ -176,3 +175,4 @@
     wrapt==1.16.0
     XlsxWriter==3.2.0
     zaproxy==0.4.0
+    ml-dtypes==0.4.0
