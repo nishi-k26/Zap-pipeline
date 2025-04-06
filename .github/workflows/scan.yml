@@ -39,7 +39,7 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
-          pip install numpy==2.0.1
+          pip install numpy==2.0.0rc1
           pip install -r requirements.txt
 
       # Run the vulnerability scan (make sure scan.py and config.yml are in the repo)
