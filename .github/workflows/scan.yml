@@ -35,7 +35,7 @@ jobs:
         run: |
           docker pull zaproxy/zap-stable
           docker run -d -p 8080:8080 -e ZAP_API_KEY=${{ secrets.API_KEY }} zaproxy/zap-stable zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true
-          sleep 30
+          sleep 50
           docker ps
 
       # Install dependencies
@@ -54,5 +54,6 @@ jobs:
           ATTACK_MODE: ${{ secrets.ATTACK_MODE }}  # Optional: Can be set to 'true' or 'false'
           SCAN_TYPE: ${{ secrets.SCAN_TYPE }}  # Optional: 'full' or 'quick'
           MAX_DEPTH: ${{ secrets.MAX_DEPTH }}
+          ZAP_ADDRESS: "http://127.0.0.1:8080"
         run: |
           python3 scan.py
