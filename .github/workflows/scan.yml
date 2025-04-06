@@ -30,6 +30,7 @@ jobs:
       - name: Install and Start ZAP
         run: |
           wget https://github.com/zaproxy/zaproxy/releases/tag/v2.16.1/ZAP_2.16.1_Linux.tar.gz
+          sha256sum ZAP_2.16.1_Linux.tar.gz
           gunzip ZAP_2.16.1_Linux.tar.gz
           tar -xvf ZAP_2.16.1_Linux.tar
           cd ZAP_2.16.0
