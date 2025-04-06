@@ -26,15 +26,11 @@ jobs:
         with:
           python-version: '3.11'  # Use the appropriate Python version
 
-      # Install ZAP
-      - name: Install and Start ZAP
+      # Install ZAP using Docker
+      - name: Install and Start ZAP using Docker
         run: |
-          wget https://github.com/zaproxy/zaproxy/releases/tag/v2.16.1/ZAP_2.16.1_Linux.tar.gz
-          sha256sum ZAP_2.16.1_Linux.tar.gz
-          gunzip ZAP_2.16.1_Linux.tar.gz
-          tar -xvf ZAP_2.16.1_Linux.tar
-          cd ZAP_2.16.0
-          ./zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true -config api.key=${{ secrets.API_KEY }} &
+          docker pull owasp/zap2docker-stable
+          docker run -d -p 8080:8080 -e ZAP_API_KEY=${{ secrets.API_KEY }} owasp/zap2docker-stable zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true
           sleep 30
 
       # Install dependencies
