@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - main  # You can specify which branch you want to trigger the action on (e.g., 'main')
-  
+
 jobs:
   scan:
     runs-on: ubuntu-latest  # Use the latest Ubuntu runner
@@ -35,11 +35,15 @@ jobs:
         run: |
           docker pull zaproxy/zap-stable
           docker run -d -p 8080:8080 -e ZAP_API_KEY=${{ secrets.API_KEY }} zaproxy/zap-stable zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true
-          sleep 60
+          sleep 120  # Increased sleep time to 2 minutes
 
-      # Check ZAP Docker status
+      # Check ZAP Docker container status
       - name: Check ZAP Docker container status
         run: docker ps -a
+        
+      # Check ZAP Docker container logs
+      - name: Check ZAP Docker container logs
+        run: docker logs $(docker ps -q --filter ancestor=zaproxy/zap-stable)
         
       # Test connection
       - name: Test connection to ZAP
