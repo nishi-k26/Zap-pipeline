@@ -54,5 +54,6 @@ jobs:
           SCAN_TYPE: ${{ secrets.SCAN_TYPE }}  # Optional: 'full' or 'quick'
           MAX_DEPTH: ${{ secrets.MAX_DEPTH }}
           ZAP_ADDRESS: "http://127.0.0.1:8080"
+          NO_PROXY: '*'  # Disable proxy
         run: |
           python3 scan.py
