@@ -3,41 +3,27 @@ import os
 import requests
 from zapv2 import ZAPv2
 from dotenv import load_dotenv
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 load_dotenv()
 
 # Retrieve sensitive information from environment variables
-website_url = os.getenv('TARGET_URL')  # Use the environment variable for the URL
-username = os.getenv('USERNAME')  # Use the environment variable for the username
-password = os.getenv('PASSWORD')  # Use the environment variable for the password
-api_key = os.getenv('API_KEY')  # Use the environment variable for the API key
+website_url = os.getenv('TARGET_URL')
+username = os.getenv('USERNAME')
+password = os.getenv('PASSWORD')
+api_key = os.getenv('API_KEY')
 
 # Retrieve scan settings from environment variables
-attack_mode = os.getenv('ATTACK_MODE', 'false').lower() == 'true'  # Default to False if not set
-scan_type = os.getenv('SCAN_TYPE', 'quick')  # Default to 'quick' if not set
-max_depth = int(os.getenv('MAX_DEPTH', 5))  # Default to 5 if not set
+attack_mode = os.getenv('ATTACK_MODE', 'false').lower() == 'true'
+scan_type = os.getenv('SCAN_TYPE', 'quick')
+max_depth = int(os.getenv('MAX_DEPTH', 5))
 zap_address = "http://127.0.0.1:8080"
-print(f"Using API key: {api_key}")
 
 # Check if the environment variables are set
 if not website_url or not username or not password or not api_key:
     raise ValueError("Required environment variables (TARGET_URL, USERNAME, PASSWORD, API_KEY) are not set.")
-print(f"Using proxy: {zap_address}")
 
-# Start ZAP session with the API key
-zap = ZAPv2(
-    apikey=api_key,
-   proxies={'http': zap_address, 'https': zap_address}
-)
-
-# Open the target URL
-try:
-    print(f"Opening URL: {website_url}")
-    zap.urlopen(website_url)
-except Exception as e:
-    print(f"Error opening URL: {e}")
-    exit(1)
-    
 # Function to check if ZAP is ready
 def check_zap_ready(zap_address):
     try:
@@ -46,6 +32,31 @@ def check_zap_ready(zap_address):
     except requests.exceptions.RequestException as e:
         print(f"Error checking ZAP status: {e}")
         return False
+
+# Check if ZAP is ready
+if not check_zap_ready(zap_address):
+    print("ZAP instance is not ready. Exiting.")
+    exit(1)
+
+# Start ZAP session with the API key
+print(f"Using proxy: {zap_address}")
+print(f"Using API key: {api_key}")
+
+session = requests.Session()
+retry = Retry(connect=5, backoff_factor=0.5)
+adapter = HTTPAdapter(max_retries=retry, pool_connections=1, pool_maxsize=1)
+session.mount('http://', adapter)
+session.mount('https://', adapter)
+
+zap = ZAPv2(apikey=api_key, proxies={'http': zap_address, 'https': zap_address}, session=session)
+
+# Open the target URL
+try:
+    print(f"Opening URL: {website_url}")
+    zap.urlopen(website_url)
+except Exception as e:
+    print(f"Error opening URL: {e}")
+    exit(1)
 
 # Handle authentication
 print(f"Logging in as {username}...")
@@ -57,21 +68,24 @@ login_data = {
 
 # Send login request using requests library
 response = requests.post(website_url, data=login_data)
+print(f"Login response: {response.text}")
 if response.status_code == 200:
     print("Login successful")
 else:
     print(f"Login failed with status code: {response.status_code}")
     exit(1)
 
-# Configure the scan
-if scan_type == "full":
-    scan_policy = "Full Scan"
-else:
-    scan_policy = "Quick Scan"
+# Add delay before spidering
+print("Waiting for ZAP to be ready...")
+time.sleep(30)  # Increase sleep time if necessary
 
 # Start the spidering process
-print(f"Spidering the website...")
-zap.spider.scan(website_url)
+try:
+    print(f"Spidering the website: {website_url}")
+    zap.spider.scan(website_url)
+except Exception as e:
+    print(f"Error during spidering: {e}")
+    exit(1)
 
 # Wait for spidering to finish
 while int(zap.spider.status()) < 100:
@@ -79,7 +93,7 @@ while int(zap.spider.status()) < 100:
     time.sleep(2)
 
 # Configure and start active scanning
-print(f"Starting {scan_policy}...")
+print(f"Starting active scan...")
 scan_id = zap.ascan.scan(website_url)
 
 # Configure scan settings
