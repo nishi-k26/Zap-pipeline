@@ -16,10 +16,13 @@ api_key = os.getenv('API_KEY')  # Use the environment variable for the API key
 attack_mode = os.getenv('ATTACK_MODE', 'false').lower() == 'true'  # Default to False if not set
 scan_type = os.getenv('SCAN_TYPE', 'quick')  # Default to 'quick' if not set
 max_depth = int(os.getenv('MAX_DEPTH', 5))  # Default to 5 if not set
+zap_address = "http://127.0.0.1:8080"
+print(f"Using API key: {api_key}")
 
 # Check if the environment variables are set
 if not website_url or not username or not password or not api_key:
     raise ValueError("Required environment variables (TARGET_URL, USERNAME, PASSWORD, API_KEY) are not set.")
+print(f"Using proxy: {zap_address}")
 
 # Start ZAP session with the API key
 zap = ZAPv2(
@@ -28,8 +31,13 @@ zap = ZAPv2(
 )
 
 # Open the target URL
-print(f"Opening URL: {website_url}")
-zap.urlopen(website_url)
+try:
+    print(f"Opening URL: {website_url}")
+    zap.urlopen(website_url)
+except Exception as e:
+    print(f"Error opening URL: {e}")
+    exit(1)
+
 
 # Handle authentication
 print(f"Logging in as {username}...")
