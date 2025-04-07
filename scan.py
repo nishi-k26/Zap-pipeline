@@ -24,7 +24,7 @@ if not website_url or not username or not password or not api_key:
 # Start ZAP session with the API key
 zap = ZAPv2(
     apikey=api_key,
-    proxies={'http': 'http://127.0.0.1:8080', 'https': 'http://127.0.0.1:8080'}
+   proxies={'http': zap_address, 'https': zap_address}
 )
 
 # Open the target URL
