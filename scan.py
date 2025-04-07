@@ -37,7 +37,15 @@ try:
 except Exception as e:
     print(f"Error opening URL: {e}")
     exit(1)
-
+    
+# Function to check if ZAP is ready
+def check_zap_ready(zap_address):
+    try:
+        response = requests.get(f"{zap_address}/")
+        return response.status_code == 200
+    except requests.exceptions.RequestException as e:
+        print(f"Error checking ZAP status: {e}")
+        return False
 
 # Handle authentication
 print(f"Logging in as {username}...")
