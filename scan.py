@@ -43,7 +43,7 @@ print(f"Using proxy: {zap_address}")
 print(f"Using API key: {api_key}")
 
 session = requests.Session()
-retry = Retry(connect=5, backoff_factor=0.5)
+retry = Retry(connect=10, backoff_factor=1.0)
 adapter = HTTPAdapter(max_retries=retry, pool_connections=1, pool_maxsize=1)
 session.mount('http://', adapter)
 session.mount('https://', adapter)
@@ -69,7 +69,7 @@ login_data = {
 
 # Send login request using requests library
 response = requests.post(website_url, data=login_data)
-print(f"Login response: {response.text}")
+# print(f"Login response: {response.text}")
 if response.status_code == 200:
     print("Login successful")
 else:
