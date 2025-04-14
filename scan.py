@@ -48,7 +48,8 @@ adapter = HTTPAdapter(max_retries=retry, pool_connections=1, pool_maxsize=1)
 session.mount('http://', adapter)
 session.mount('https://', adapter)
 
-zap = ZAPv2(apikey=api_key, proxies={'http': zap_address, 'https': zap_address}, session=session)
+# Remove the 'session' argument from the ZAPv2 constructor
+zap = ZAPv2(apikey=api_key, proxies={'http': zap_address, 'https': zap_address})
 
 # Open the target URL
 try:
