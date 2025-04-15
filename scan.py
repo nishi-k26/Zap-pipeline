@@ -18,7 +18,7 @@ api_key = os.getenv('API_KEY')
 attack_mode = os.getenv('ATTACK_MODE', 'false').lower() == 'true'
 scan_type = os.getenv('SCAN_TYPE', 'quick')
 max_depth = int(os.getenv('MAX_DEPTH', 5))
-zap_address = "http://127.0.0.1:8080"
+zap_address = "http://localhost:8080"
 
 # Check if the environment variables are set
 if not website_url or not username or not password or not api_key:
